@@ -1,0 +1,520 @@
+{
+   bound_relative_root: {
+      x: 0.5,
+      y: 0,
+      z: 0.5,
+   },
+   materials: [
+      {
+         name: "carlingue",
+         parameters: [
+            {
+               baseColor: "carlingue.1Couleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "bolter_avant_D_1_1",
+         parameters: [
+            {
+               baseColor: "bolter_aile_gaucheCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "gouvernail",
+         parameters: [
+            {
+               baseColor: "gouvernailCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "baie_ouvrant_cokpit",
+         parameters: [
+            {
+               baseColor: "baie_ouvrant_cokpit-poser",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "D_sas_lateral",
+         parameters: [
+            {
+               baseColor: "D_sas_lateral.1Couleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "G_sas_lateral",
+         parameters: [
+            {
+               baseColor: "G_sas_lateral.1Couleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "canon",
+         parameters: [
+            {
+               baseColor: "canonCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "porte_ventrale_avant",
+         parameters: [
+            {
+               baseColor: "porte_ventrale_avantCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "G_aile_variable",
+         parameters: [
+            {
+               baseColor: "G_aile_variableCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "D_aile_variable",
+         parameters: [
+            {
+               baseColor: "D_aile_variableCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "carlingue-corection",
+         parameters: [
+            {
+               baseColor: "carlingue-corectionCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "D_Patin_arriere",
+         parameters: [
+            {
+               baseColor: "D_Patin_arriere.1Couleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "G_Patin_arriere",
+         parameters: [
+            {
+               baseColor: "G_Patin_arriere.1Couleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "patin_avant",
+         parameters: [
+            {
+               baseColor: "patin_avant.1Couleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "element_aileron_avant",
+         parameters: [
+            {
+               baseColor: "element_aileron_avantCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "interieur_bas",
+         parameters: [
+            {
+               baseColor: "interieur_basCouleur_de_surface",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+   ],
+   model: {
+      attributes: [
+         "Position",
+         "TexCoord",
+         "Orientation",
+      ],
+      collision: {},
+      file: "sampledata/models/thunderhawk/thunderhawk.obj",
+      name: "thunderhawk",
+      recenter: "root",
+      scale: 0.0020,
+   },
+   samplers: [
+      {
+         file: "sampledata/models/thunderhawk\\carlingue.1Couleur_de_surface.jpg",
+         name: "carlingue.1Couleur_de_surface",
+         pipeline_name: "carlingue.1Couleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\G_aile_variableCouleur_de_surface.jpg",
+         name: "G_aile_variableCouleur_de_surface",
+         pipeline_name: "G_aile_variableCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\element_aileron_avantCouleur_de_surface.jpg",
+         name: "element_aileron_avantCouleur_de_surface",
+         pipeline_name: "element_aileron_avantCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\bolter_aile_gaucheCouleur_de_surface.jpg",
+         name: "bolter_aile_gaucheCouleur_de_surface",
+         pipeline_name: "bolter_aile_gaucheCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\gouvernailCouleur_de_surface.jpg",
+         name: "gouvernailCouleur_de_surface",
+         pipeline_name: "gouvernailCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\canonCouleur_de_surface.jpg",
+         name: "canonCouleur_de_surface",
+         pipeline_name: "canonCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\baie_ouvrant_cokpit-poser.jpg",
+         name: "baie_ouvrant_cokpit-poser",
+         pipeline_name: "baie_ouvrant_cokpit-poser.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\D_sas_lateral.1Couleur_de_surface.jpg",
+         name: "D_sas_lateral.1Couleur_de_surface",
+         pipeline_name: "D_sas_lateral.1Couleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\G_sas_lateral.1Couleur_de_surface.jpg",
+         name: "G_sas_lateral.1Couleur_de_surface",
+         pipeline_name: "G_sas_lateral.1Couleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\porte_ventrale_avantCouleur_de_surface.jpg",
+         name: "porte_ventrale_avantCouleur_de_surface",
+         pipeline_name: "porte_ventrale_avantCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\D_aile_variableCouleur_de_surface.jpg",
+         name: "D_aile_variableCouleur_de_surface",
+         pipeline_name: "D_aile_variableCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\carlingue-corectionCouleur_de_surface.jpg",
+         name: "carlingue-corectionCouleur_de_surface",
+         pipeline_name: "carlingue-corectionCouleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\D_Patin_arriere.1Couleur_de_surface.jpg",
+         name: "D_Patin_arriere.1Couleur_de_surface",
+         pipeline_name: "D_Patin_arriere.1Couleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\G_Patin_arriere.1Couleur_de_surface.jpg",
+         name: "G_Patin_arriere.1Couleur_de_surface",
+         pipeline_name: "G_Patin_arriere.1Couleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\patin_avant.1Couleur_de_surface.jpg",
+         name: "patin_avant.1Couleur_de_surface",
+         pipeline_name: "patin_avant.1Couleur_de_surface.jpg",
+      },
+      {
+         file: "sampledata/models/thunderhawk\\interieur_basCouleur_de_surface.jpg",
+         name: "interieur_basCouleur_de_surface",
+         pipeline_name: "interieur_basCouleur_de_surface.jpg",
+      },
+   ],
+   version: "0.52:1",
+}
