@@ -6,7 +6,7 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import timber.log.Timber
 
-class THawk: Node(), Controls {
+class THawk: MovingNode() {
 
     fun create(anchorNode: AnchorNode, position: Vector3, direction: Vector3, thawkRenderable: ModelRenderable): Node {
         setParent(anchorNode)
@@ -17,36 +17,11 @@ class THawk: Node(), Controls {
         return this
     }
 
-    override fun goUp() {
-        Timber.d("goUp")
-        worldPosition = updateVector3(newY = (worldPosition.y + 0.01f), oldVector3 = worldPosition)
-    }
 
-    override fun goDown() {
-        Timber.d("goDown")
-    }
 
-    override fun goLeft() {
-        Timber.d("goLeft")
-    }
+    override fun moveTo(direction: Direction) {
+        Timber.d("moveTo ${direction.name}")
 
-    override fun goForward() {
-        Timber.d("goForward")
-    }
-
-    override fun goRight() {
-        Timber.d("goRight")
-    }
-
-    override fun goBackward() {
-        Timber.d("goBackward")
-    }
-
-    private fun updateVector3(newX: Float? = null, newY: Float? = null, newZ: Float? = null, oldVector3: Vector3): Vector3 {
-        newX?.let { oldVector3.x = newX }
-        newY?.let { oldVector3.y = newY }
-        newZ?.let { oldVector3.z = newZ }
-
-        return oldVector3
+        startMovement(direction)
     }
 }

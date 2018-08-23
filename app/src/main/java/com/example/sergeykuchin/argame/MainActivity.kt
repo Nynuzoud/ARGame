@@ -23,6 +23,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
 
     private val CAM_PERMISSION = 123
+    private val DEFAULT_DISTANCE = -1.5f
 
     private var thawkRenderable: ModelRenderable? = null
     private var hasPlacedTHawk = false
@@ -41,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         buildTHawkModel()
-        setUpSceneTouchListener()
         setUpSceneUpdateListener()
         Utils.requestCameraPermission(this, CAM_PERMISSION)
 
@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                 .setOnTouchListener { hitTestResult: HitTestResult, event: MotionEvent ->
                     if (!hasPlacedTHawk) {
                         onSingleTap()
+                        showControls()
                     }
                     false
                 }
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                     for (plane in frame.getUpdatedTrackables(Plane::class.java)) {
                         if (plane.trackingState == TrackingState.TRACKING) {
                             hideLoadingMessage()
-                            showControls()
+                            setUpSceneTouchListener()
                         }
                     }
                 }
@@ -105,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         //try to place tHawk if it isn't placed yet
         if (!hasPlacedTHawk && tryToPlaceTHawk()) {
             hasPlacedTHawk = true
+            showControls()
         }
     }
 
@@ -118,7 +120,19 @@ class MainActivity : AppCompatActivity() {
         val direction = Vector3.subtract(worldPosition, position)
         direction.y = position.y
 
-        val anchor = ar_scene_view.session.createAnchor(ar_scene_view.arFrame.camera.pose.compose(Pose.makeTranslation(0f, 0f, -1.5f)).extractTranslation())
+        val anchor = ar_scene_view
+                .session
+                .createAnchor(
+                        ar_scene_view
+                                .arFrame
+                                .camera
+                                .pose
+                                .compose(
+                                        Pose.makeTranslation(0f, 0f, DEFAULT_DISTANCE)
+                                )
+                                .extractTranslation()
+                )
+
         val anchorNode = AnchorNode(anchor)
         anchorNode.setParent(scene)
 
@@ -130,13 +144,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleControlEvents() {
-        up.setOnClickListener { tHawk?.goUp() }
-        down.setOnClickListener { tHawk?.goDown() }
+        up.setOnClickListener { tHawk?.moveTo(Direction.UP) }
+        down.setOnClickListener { tHawk?.moveTo(Direction.DOWN) }
 
-        left.setOnClickListener { tHawk?.goLeft() }
-        forward.setOnClickListener { tHawk?.goForward() }
-        right.setOnClickListener { tHawk?.goRight() }
-        backward.setOnClickListener { tHawk?.goBackward() }
+        left.setOnClickListener { tHawk?.moveTo(Direction.LEFT) }
+        forward.setOnClickListener { tHawk?.moveTo(Direction.FORWARD) }
+        right.setOnClickListener { tHawk?.moveTo(Direction.RIGHT) }
+        backward.setOnClickListener { tHawk?.moveTo(Direction.BACKWARD) }
     }
 
     private fun showLoadingMessage() {
@@ -209,6 +223,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         if (ar_scene_view != null) {
             ar_scene_view.pause()
+            hideControls()
         }
     }
 
