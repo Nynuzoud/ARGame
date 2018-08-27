@@ -1,18 +1,25 @@
 package com.example.sergeykuchin.argame
 
+import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.Animation
+import android.animation.ValueAnimator
+import android.os.Handler
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.math.Vector3Evaluator
 import timber.log.Timber
 
-abstract class MovingNode: Node(), Controls, Animation.AnimationListener {
+abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
-    private var countOfXMovements: Int = 0
-    private var countOfYMovements: Int = 0
-    private var countOfZMovements: Int = 0
+    private var xRight = false
+    private var xLeft = false
+    private var yUp = false
+    private var yDown = false
+    private var zForward = false
+    private var zBackward = false
 
     /**
      * Multiplier to each movement
@@ -20,47 +27,138 @@ abstract class MovingNode: Node(), Controls, Animation.AnimationListener {
     protected var movementRatio: Float = 1f
     protected var movementStep: Float = 0.1f * movementRatio
 
-    protected var animationDuration: Long = 500L
-
-    protected fun addXMovement(): Int = ++countOfXMovements
-    protected fun removeXMovement(): Int = --countOfXMovements
-
-    protected fun addYMovement(): Int = ++countOfYMovements
-    protected fun removeYMovement(): Int = --countOfYMovements
-
-    protected fun addZMovement(): Int = ++countOfZMovements
-    protected fun removeZMovement(): Int = --countOfZMovements
+    protected var animationDuration: Long = 200L
 
     protected var objectAnimator: ObjectAnimator? = null
 
-    protected fun startMovement(direction: Direction) {
+    protected var movementStatus: MovementStatus = MovementStatus.STOPPED
+    private var isFirstMovement = true
 
-        if (objectAnimator == null) objectAnimator = createObjectAnimator()
+    private var movementThread: Thread? = null
+    private var movementThreadHandler: Handler? = null
+    private val START_ANIMATION_CODE = 324
 
-        when(direction) {
-            Direction.UP -> goUp()
-            Direction.DOWN -> goDown()
-
-            Direction.LEFT -> goLeft()
-            Direction.FORWARD -> goForward()
-            Direction.RIGHT -> goRight()
-            Direction.BACKWARD -> goBackward()
+    override fun goUp() {
+        if (!yDown) {
+            yUp = true
         }
     }
 
-    private fun goUp() {
-        addYMovement()
+    override fun releaseUp() {
+        yUp = false
+    }
 
-        animateModel(worldPositionAxis, movementStep)
-        objectAnimator?.setObjectValues(updateVector3(newY = (worldPosition.y + movementStep), oldVector3 = worldPosition))
+    override fun goDown() {
+        if (!yUp) {
+            yDown = true
+        }
+    }
+
+    override fun releaseDown() {
+        yDown = false
+    }
+
+
+    override fun goRight() {
+        if (!xLeft) {
+            xRight = true
+        }
+    }
+
+    override fun releaseRight() {
+        xRight = false
+    }
+
+    override fun goLeft() {
+        if (!xRight) {
+            xLeft = true
+        }
+    }
+
+    override fun releaseLeft() {
+        xLeft = false
+    }
+
+
+
+    override fun goForward() {
+        if (!zBackward) {
+            zForward = true
+        }
+    }
+
+    override fun releaseForward() {
+        zForward = false
+    }
+
+    override fun goBackward() {
+        if (!zForward) {
+            zBackward = true
+        }
+    }
+
+    override fun releaseBackward() {
+        zBackward = false
+    }
+
+    fun startMovementHandler() {
+        if (objectAnimator == null) objectAnimator = createObjectAnimator()
+        if (movementThreadHandler == null) movementThreadHandler = Handler { message ->
+            when (message.what) {
+                START_ANIMATION_CODE -> {
+                    Timber.d("TEST")
+                }
+            }
+
+            return@Handler true
+        }
+
+        movementThread = Thread(Runnable {
+
+            while (movementThread?.isAlive == true) {
+
+                if (!isEveryButtonReleased()) {
+                    if (xRight) {
+                        objectAnimator?.setObjectValues(updateVector3(newX = (worldPosition.x + movementStep), oldVector3 = worldPosition))
+                    }
+                    if (xLeft) {
+                        objectAnimator?.setObjectValues(updateVector3(newX = (worldPosition.x - movementStep), oldVector3 = worldPosition))
+                    }
+                    if (yUp) {
+                        objectAnimator?.setObjectValues(updateVector3(newY = (worldPosition.y + movementStep), oldVector3 = worldPosition))
+                    }
+                    if (yDown) {
+                        objectAnimator?.setObjectValues(updateVector3(newY = (worldPosition.y - movementStep), oldVector3 = worldPosition))
+                    }
+                    if (zForward) {
+                        objectAnimator?.setObjectValues(updateVector3(newZ = (worldPosition.z + movementStep), oldVector3 = worldPosition))
+                    }
+                    if (zBackward) {
+                        objectAnimator?.setObjectValues(updateVector3(newZ = (worldPosition.z - movementStep), oldVector3 = worldPosition))
+                    }
+
+                    if (isFirstMovement) {
+                        movementStatus = MovementStatus.STARTING
+                        objectAnimator?.interpolator = AccelerateInterpolator()
+
+                        movementThreadHandler?.sendEmptyMessage(START_ANIMATION_CODE)
+
+                        isFirstMovement = false
+                    }
+
+                }
+            }
+        })
+        movementThread?.start()
     }
 
     protected fun createObjectAnimator(): ObjectAnimator {
         val objectAnimator = ObjectAnimator()
-        objectAnimator.setObjectValues(updateVector3(newY = (worldPosition.y + 0.1f), oldVector3 = worldPosition))
         objectAnimator.propertyName = "worldPosition"
+        objectAnimator.addUpdateListener(this)
+        objectAnimator.addListener(this)
         objectAnimator.setEvaluator(Vector3Evaluator())
-        objectAnimator.interpolator = AccelerateDecelerateInterpolator()
+        //objectAnimator.interpolator = LinearInterpolator()
         objectAnimator.setAutoCancel(true)
 
         objectAnimator.target = this
@@ -77,15 +175,45 @@ abstract class MovingNode: Node(), Controls, Animation.AnimationListener {
         return oldVector3
     }
 
-    override fun onAnimationRepeat(p0: Animation?) {
-        Timber.d("onAnimationRepeat")
+    private fun isEveryButtonReleased(): Boolean = !xRight && !xLeft && !yUp && !yDown && !zForward && !zBackward
+
+    override fun onAnimationUpdate(valueAnimator: ValueAnimator?) {
+        valueAnimator?.currentPlayTime
+        valueAnimator?.animatedValue as Float
     }
 
-    override fun onAnimationEnd(p0: Animation?) {
-        Timber.d("onAnimationEnd")
+    override fun onAnimationRepeat(p0: Animator?) {
+
     }
 
-    override fun onAnimationStart(p0: Animation?) {
-        Timber.d("onAnimationStart")
+    override fun onAnimationEnd(p0: Animator?) {
+        when (movementStatus) {
+            MovementStatus.STARTING -> {
+                movementStatus = MovementStatus.MOVING
+                objectAnimator?.interpolator = LinearInterpolator()
+                objectAnimator?.start()
+            }
+            MovementStatus.MOVING -> {
+                if (isEveryButtonReleased()) {
+                    movementStatus = MovementStatus.ENDING
+                    objectAnimator?.interpolator = DecelerateInterpolator()
+                    objectAnimator?.start()
+                }
+            }
+            MovementStatus.ENDING -> {
+                movementStatus = MovementStatus.STOPPED
+                isFirstMovement = true
+            }
+            else -> {}
+        }
+    }
+
+    override fun onAnimationCancel(p0: Animator?) {
+
+    }
+
+    override fun onAnimationStart(p0: Animator?) {
+
+
     }
 }

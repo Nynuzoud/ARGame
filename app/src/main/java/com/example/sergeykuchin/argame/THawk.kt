@@ -4,7 +4,6 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
-import timber.log.Timber
 
 class THawk: MovingNode() {
 
@@ -17,11 +16,4 @@ class THawk: MovingNode() {
         return this
     }
 
-
-
-    override fun moveTo(direction: Direction) {
-        Timber.d("moveTo ${direction.name}")
-
-        startMovement(direction)
-    }
 }

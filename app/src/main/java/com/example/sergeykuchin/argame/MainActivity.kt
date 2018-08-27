@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity() {
         if (!hasPlacedTHawk && tryToPlaceTHawk()) {
             hasPlacedTHawk = true
             showControls()
+            tHawk?.startMovementHandler()
         }
     }
 
@@ -144,13 +145,49 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleControlEvents() {
-        up.setOnClickListener { tHawk?.moveTo(Direction.UP) }
-        down.setOnClickListener { tHawk?.moveTo(Direction.DOWN) }
+        up.setOnTouchListener { _, motionEvent ->
+            when(motionEvent.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseUp()
+                MotionEvent.ACTION_DOWN -> tHawk?.goUp()
+            }
+            return@setOnTouchListener true
+        }
+        down.setOnTouchListener { _, motionEvent ->
+            when(motionEvent.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseDown()
+                MotionEvent.ACTION_DOWN -> tHawk?.goDown()
+            }
+            return@setOnTouchListener true
+        }
 
-        left.setOnClickListener { tHawk?.moveTo(Direction.LEFT) }
-        forward.setOnClickListener { tHawk?.moveTo(Direction.FORWARD) }
-        right.setOnClickListener { tHawk?.moveTo(Direction.RIGHT) }
-        backward.setOnClickListener { tHawk?.moveTo(Direction.BACKWARD) }
+        left.setOnTouchListener { _, motionEvent ->
+            when(motionEvent.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseLeft()
+                MotionEvent.ACTION_DOWN -> tHawk?.goLeft()
+            }
+            return@setOnTouchListener true
+        }
+        forward.setOnTouchListener { _, motionEvent ->
+            when(motionEvent.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseForward()
+                MotionEvent.ACTION_DOWN -> tHawk?.goForward()
+            }
+            return@setOnTouchListener true
+        }
+        right.setOnTouchListener { _, motionEvent ->
+            when(motionEvent.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseRight()
+                MotionEvent.ACTION_DOWN -> tHawk?.goRight()
+            }
+            return@setOnTouchListener true
+        }
+        backward.setOnTouchListener { _, motionEvent ->
+            when(motionEvent.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseBackward()
+                MotionEvent.ACTION_DOWN -> tHawk?.goBackward()
+            }
+            return@setOnTouchListener true
+        }
     }
 
     private fun showLoadingMessage() {
