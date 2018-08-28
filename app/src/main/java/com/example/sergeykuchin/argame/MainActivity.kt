@@ -145,46 +145,82 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleControlEvents() {
-        up.setOnTouchListener { _, motionEvent ->
+        up.setOnTouchListener { view, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseUp()
-                MotionEvent.ACTION_DOWN -> tHawk?.goUp()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.isPressed = false
+                    tHawk?.releaseUp()
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.isPressed = true
+                    tHawk?.goUp()
+                }
             }
             return@setOnTouchListener true
         }
-        down.setOnTouchListener { _, motionEvent ->
+        down.setOnTouchListener { view, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseDown()
-                MotionEvent.ACTION_DOWN -> tHawk?.goDown()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.isPressed = false
+                    tHawk?.releaseDown()
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.isPressed = true
+                    tHawk?.goDown()
+                }
             }
             return@setOnTouchListener true
         }
 
-        left.setOnTouchListener { _, motionEvent ->
+        left.setOnTouchListener { view, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseLeft()
-                MotionEvent.ACTION_DOWN -> tHawk?.goLeft()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.isPressed = false
+                    tHawk?.releaseLeft()
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.isPressed = true
+                    tHawk?.goLeft()
+                }
             }
             return@setOnTouchListener true
         }
-        forward.setOnTouchListener { _, motionEvent ->
+        forward.setOnTouchListener { view, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseForward()
-                MotionEvent.ACTION_DOWN -> tHawk?.goForward()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.isPressed = false
+                    tHawk?.releaseForward()
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.isPressed = true
+                    tHawk?.goForward()
+                }
             }
             return@setOnTouchListener true
         }
-        right.setOnTouchListener { _, motionEvent ->
+        right.setOnTouchListener { view, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseRight()
-                MotionEvent.ACTION_DOWN -> tHawk?.goRight()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.isPressed = false
+                    tHawk?.releaseRight()
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.isPressed = true
+                    tHawk?.goRight()
+                }
             }
             return@setOnTouchListener true
         }
-        backward.setOnTouchListener { _, motionEvent ->
+        backward.setOnTouchListener { view, motionEvent ->
             when(motionEvent.action) {
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> tHawk?.releaseBackward()
-                MotionEvent.ACTION_DOWN -> tHawk?.goBackward()
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    view.isPressed = false
+                    tHawk?.releaseBackward()
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.isPressed = true
+                    tHawk?.goBackward()
+                }
             }
             return@setOnTouchListener true
         }

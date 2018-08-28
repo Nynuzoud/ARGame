@@ -10,7 +10,6 @@ import android.view.animation.LinearInterpolator
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.math.Vector3Evaluator
-import timber.log.Timber
 
 abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
@@ -29,10 +28,11 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
 
     protected var animationDuration: Long = 200L
 
+    @Volatile
     protected var objectAnimator: ObjectAnimator? = null
 
+    @Volatile
     protected var movementStatus: MovementStatus = MovementStatus.STOPPED
-    private var isFirstMovement = true
 
     private var movementThread: Thread? = null
     private var movementThreadHandler: Handler? = null
@@ -103,53 +103,56 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
 
     fun startMovementHandler() {
         if (objectAnimator == null) objectAnimator = createObjectAnimator()
+
         if (movementThreadHandler == null) movementThreadHandler = Handler { message ->
             when (message.what) {
                 START_ANIMATION_CODE -> {
-                    Timber.d("TEST")
+                    objectAnimator?.start()
                 }
             }
 
             return@Handler true
         }
 
-        movementThread = Thread(Runnable {
+        movementThread = Thread {
 
             while (movementThread?.isAlive == true) {
 
-                if (!isEveryButtonReleased()) {
-                    if (xRight) {
-                        objectAnimator?.setObjectValues(updateVector3(newX = (worldPosition.x + movementStep), oldVector3 = worldPosition))
-                    }
-                    if (xLeft) {
-                        objectAnimator?.setObjectValues(updateVector3(newX = (worldPosition.x - movementStep), oldVector3 = worldPosition))
-                    }
-                    if (yUp) {
-                        objectAnimator?.setObjectValues(updateVector3(newY = (worldPosition.y + movementStep), oldVector3 = worldPosition))
-                    }
-                    if (yDown) {
-                        objectAnimator?.setObjectValues(updateVector3(newY = (worldPosition.y - movementStep), oldVector3 = worldPosition))
-                    }
-                    if (zForward) {
-                        objectAnimator?.setObjectValues(updateVector3(newZ = (worldPosition.z + movementStep), oldVector3 = worldPosition))
-                    }
-                    if (zBackward) {
-                        objectAnimator?.setObjectValues(updateVector3(newZ = (worldPosition.z - movementStep), oldVector3 = worldPosition))
-                    }
+                if (!isEveryButtonReleased() && movementStatus == MovementStatus.STOPPED) {
+                    setNewPosition()
 
-                    if (isFirstMovement) {
-                        movementStatus = MovementStatus.STARTING
-                        objectAnimator?.interpolator = AccelerateInterpolator()
+                    objectAnimator?.setEvaluator(Vector3Evaluator())
+                    movementStatus = MovementStatus.STARTING
+                    objectAnimator?.interpolator = AccelerateInterpolator()
 
-                        movementThreadHandler?.sendEmptyMessage(START_ANIMATION_CODE)
-
-                        isFirstMovement = false
-                    }
+                    movementThreadHandler?.sendEmptyMessage(START_ANIMATION_CODE)
 
                 }
             }
-        })
+        }
+        movementThread?.isDaemon = true
         movementThread?.start()
+    }
+
+    private fun setNewPosition() {
+        if (xRight) {
+            objectAnimator?.setObjectValues(worldPosition, updateVector3(newX = (worldPosition.x + movementStep), oldVector3 = worldPosition))
+        }
+        if (xLeft) {
+            objectAnimator?.setObjectValues(worldPosition, updateVector3(newX = (worldPosition.x - movementStep), oldVector3 = worldPosition))
+        }
+        if (yUp) {
+            objectAnimator?.setObjectValues(worldPosition, updateVector3(newY = (worldPosition.y + movementStep), oldVector3 = worldPosition))
+        }
+        if (yDown) {
+            objectAnimator?.setObjectValues(worldPosition, updateVector3(newY = (worldPosition.y - movementStep), oldVector3 = worldPosition))
+        }
+        if (zForward) {
+            objectAnimator?.setObjectValues(worldPosition, updateVector3(newZ = (worldPosition.z + movementStep), oldVector3 = worldPosition))
+        }
+        if (zBackward) {
+            objectAnimator?.setObjectValues(worldPosition, updateVector3(newZ = (worldPosition.z - movementStep), oldVector3 = worldPosition))
+        }
     }
 
     protected fun createObjectAnimator(): ObjectAnimator {
@@ -157,8 +160,6 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
         objectAnimator.propertyName = "worldPosition"
         objectAnimator.addUpdateListener(this)
         objectAnimator.addListener(this)
-        objectAnimator.setEvaluator(Vector3Evaluator())
-        //objectAnimator.interpolator = LinearInterpolator()
         objectAnimator.setAutoCancel(true)
 
         objectAnimator.target = this
@@ -179,7 +180,7 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
 
     override fun onAnimationUpdate(valueAnimator: ValueAnimator?) {
         valueAnimator?.currentPlayTime
-        valueAnimator?.animatedValue as Float
+        valueAnimator?.animatedValue as Vector3
     }
 
     override fun onAnimationRepeat(p0: Animator?) {
@@ -189,12 +190,14 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     override fun onAnimationEnd(p0: Animator?) {
         when (movementStatus) {
             MovementStatus.STARTING -> {
+                setNewPosition()
                 movementStatus = MovementStatus.MOVING
                 objectAnimator?.interpolator = LinearInterpolator()
                 objectAnimator?.start()
             }
             MovementStatus.MOVING -> {
                 if (isEveryButtonReleased()) {
+                    setNewPosition()
                     movementStatus = MovementStatus.ENDING
                     objectAnimator?.interpolator = DecelerateInterpolator()
                     objectAnimator?.start()
@@ -202,7 +205,6 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
             }
             MovementStatus.ENDING -> {
                 movementStatus = MovementStatus.STOPPED
-                isFirstMovement = true
             }
             else -> {}
         }
