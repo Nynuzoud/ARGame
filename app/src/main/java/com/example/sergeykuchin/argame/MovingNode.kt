@@ -23,11 +23,22 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
         Z_BACKWARD
     }
 
+    @Volatile
     private var xRight = false
+
+    @Volatile
     private var xLeft = false
+
+    @Volatile
     private var yUp = false
+
+    @Volatile
     private var yDown = false
+
+    @Volatile
     private var zForward = false
+
+    @Volatile
     private var zBackward = false
 
     private val releasesQueue = PriorityQueue<Directions>()
@@ -36,13 +47,16 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
      * Multiplier to each movement
      */
     protected var movementRatio: Float = 1f
-    protected var movementStep: Float = 0.1f * movementRatio
+    protected var movementStep: Float = 0.05f * movementRatio
 
-    protected var animationDuration: Long = 200L
+    protected var startingAnimationDuration: Long = 500L
+    protected var movingAnimationDuration: Long = 200L
+    protected var endingAnimationDuration: Long = 500L
 
     @Volatile
-    protected var objectAnimator: ObjectAnimator? = null
+    private var objectAnimator: ObjectAnimator? = null
 
+    @Volatile
     protected var movementStatus: MovementStatus = MovementStatus.STOPPED
 
     private var movementThread: Thread? = null
@@ -56,7 +70,6 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     }
 
     override fun releaseUp() {
-        //yUp = false
         releasesQueue.add(Directions.Y_UP)
     }
 
@@ -67,7 +80,6 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     }
 
     override fun releaseDown() {
-        //yDown = false
         releasesQueue.add(Directions.Y_DOWN)
     }
 
@@ -79,7 +91,6 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     }
 
     override fun releaseRight() {
-        //xRight = false
         releasesQueue.add(Directions.X_RIGHT)
     }
 
@@ -103,7 +114,6 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     }
 
     override fun releaseForward() {
-        //zForward = false
         releasesQueue.add(Directions.Z_FORWARD)
     }
 
@@ -114,11 +124,10 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     }
 
     override fun releaseBackward() {
-        //zBackward = false
         releasesQueue.add(Directions.Z_BACKWARD)
     }
 
-    private fun releaseButtons() {
+    protected fun releaseButtons() {
         releasesQueue.forEach { direction ->
             when (direction) {
                 Directions.Y_UP -> yUp = false
@@ -153,8 +162,8 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
                     setNewPosition()
 
                     objectAnimator?.setEvaluator(Vector3Evaluator())
-                    movementStatus = MovementStatus.STARTING
-                    objectAnimator?.interpolator = AccelerateInterpolator()
+
+                    updateObjectAnimator(MovementStatus.STARTING)
 
                     movementThreadHandler?.sendEmptyMessage(START_ANIMATION_CODE)
 
@@ -186,7 +195,7 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
         }
     }
 
-    protected fun createObjectAnimator(): ObjectAnimator {
+    private fun createObjectAnimator(): ObjectAnimator {
         val objectAnimator = ObjectAnimator()
         objectAnimator.propertyName = "worldPosition"
         objectAnimator.addUpdateListener(this)
@@ -194,12 +203,11 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
         objectAnimator.setAutoCancel(true)
 
         objectAnimator.target = this
-        objectAnimator.duration = animationDuration
 
         return objectAnimator
     }
 
-    protected fun updateVector3(newX: Float? = null, newY: Float? = null, newZ: Float? = null, oldVector3: Vector3): Vector3 {
+    private fun updateVector3(newX: Float? = null, newY: Float? = null, newZ: Float? = null, oldVector3: Vector3): Vector3 {
         val newVector3 = Vector3()
 
         newVector3.x = oldVector3.x
@@ -214,6 +222,29 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
     }
 
     private fun isEveryButtonReleased(): Boolean = !xRight && !xLeft && !yUp && !yDown && !zForward && !zBackward
+
+    private fun updateObjectAnimator(movementStatus: MovementStatus) {
+        when (movementStatus) {
+            MovementStatus.STOPPED -> {
+                this.movementStatus = MovementStatus.STOPPED
+            }
+            MovementStatus.STARTING -> {
+                this.movementStatus = MovementStatus.STARTING
+                objectAnimator?.duration = startingAnimationDuration
+                objectAnimator?.interpolator = AccelerateInterpolator()
+            }
+            MovementStatus.MOVING -> {
+                this.movementStatus = MovementStatus.MOVING
+                objectAnimator?.duration = movingAnimationDuration
+                objectAnimator?.interpolator = LinearInterpolator()
+            }
+            MovementStatus.ENDING -> {
+                this.movementStatus = MovementStatus.ENDING
+                objectAnimator?.duration = endingAnimationDuration
+                objectAnimator?.interpolator = DecelerateInterpolator()
+            }
+        }
+    }
 
     override fun onAnimationUpdate(valueAnimator: ValueAnimator?) {
         valueAnimator?.currentPlayTime
@@ -232,24 +263,20 @@ abstract class MovingNode: Node(), Controls, ValueAnimator.AnimatorUpdateListene
         when (movementStatus) {
             MovementStatus.STARTING -> {
                 if (isEveryButtonReleased()) {
-                    movementStatus = MovementStatus.ENDING
-                    objectAnimator?.interpolator = DecelerateInterpolator()
+                    updateObjectAnimator(MovementStatus.ENDING)
                 } else {
-                    movementStatus = MovementStatus.MOVING
-                    objectAnimator?.interpolator = LinearInterpolator()
-
+                    updateObjectAnimator(MovementStatus.MOVING)
                 }
                 objectAnimator?.start()
             }
             MovementStatus.MOVING -> {
                 if (isEveryButtonReleased()) {
-                    movementStatus = MovementStatus.ENDING
-                    objectAnimator?.interpolator = DecelerateInterpolator()
+                    updateObjectAnimator(MovementStatus.ENDING)
                 }
                 objectAnimator?.start()
             }
             MovementStatus.ENDING -> {
-                movementStatus = MovementStatus.STOPPED
+                updateObjectAnimator(MovementStatus.STOPPED)
                 releasesQueue.clear()
             }
             else -> {}
